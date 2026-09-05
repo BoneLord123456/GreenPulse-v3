@@ -23,9 +23,11 @@
   width: var(--sidebar-width);
   min-width: var(--sidebar-width);
   height: 100vh;
-  position: sticky;
+  height: 100dvh;
+  position: fixed;
   top: 0;
   left: 0;
+  bottom: 0;
   background-color: var(--surface);
   border-right: 1px solid var(--border);
   display: flex;
@@ -33,6 +35,7 @@
   justify-content: space-between;
   padding: 0;
   z-index: 40;
+  overflow: hidden;
   transition: transform var(--transition-normal), background-color var(--transition-normal);
 }
 
@@ -43,6 +46,7 @@
   justify-content: space-between;
   padding: 0 24px;
   border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .brand-logo {
@@ -103,6 +107,19 @@
   gap: 4px;
   flex: 1;
   padding: 20px 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.sidebar-nav-section::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-nav-section::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
 }
 
 .nav-category-label {
@@ -156,6 +173,7 @@
   padding: 20px 20px;
   border-top: 1px solid var(--border);
   background-color: var(--surface);
+  flex-shrink: 0;
 }
 
 /* System Telemetry Status Box */
@@ -235,6 +253,8 @@
   flex-direction: column;
   min-width: 0;
   min-height: 100vh;
+  margin-left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
 }
 
 /* ==================================================

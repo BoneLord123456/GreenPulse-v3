@@ -55,6 +55,11 @@
    MOBILE DEVICES (<= 768px)
    ================================================== */
 @media (max-width: 768px) {
+  .app-main {
+    margin-left: 0;
+    width: 100%;
+  }
+
   /* Turn Sidebar into Off-Canvas Drawer */
   .app-sidebar {
     position: fixed;
