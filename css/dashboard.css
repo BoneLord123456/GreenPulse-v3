@@ -1,0 +1,521 @@
+/**
+ * GreenPulse - Dashboard View Styles (dashboard.css)
+ * 
+ * Production layouts:
+ * - Two-column spatial balance: Telemetry Map & Trends + Selected Node Inspector.
+ * - Restrained information architecture for environmental sensors.
+ * - Clean tabular typography for sensor readings.
+ */
+
+.dashboard-view-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dashboard-title-group h1 {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.dashboard-title-group p {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  margin-top: 3px;
+}
+
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.station-dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.station-dropdown-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+/* ==================================================
+   DASHBOARD BALANCED GRID
+   ================================================== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+}
+
+/* Map Card */
+.map-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.map-card .card-body {
+  padding: 0;
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 480px;
+}
+
+.leaflet-container-wrapper {
+  width: 100%;
+  flex: 1;
+  min-height: 480px;
+  height: 100%;
+  background-color: var(--surface-secondary);
+  position: relative;
+  z-index: 1;
+}
+
+.map-floating-overlay {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 10;
+  background: var(--glass-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  box-shadow: 0 8px 20px -2px rgba(15, 23, 42, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-card-footer {
+  padding: 12px 18px;
+  background: var(--glass-surface-subtle);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid var(--glass-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.legend-items {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-dot.is-green { background-color: #10B981; }
+.legend-dot.is-amber { background-color: #F59E0B; }
+
+/* Station Network Quick Select */
+.station-quick-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.station-quick-card .card-body {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.station-quick-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.station-card-item {
+  background: var(--glass-surface-subtle);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 2px 6px -1px rgba(15, 23, 42, 0.03), inset 0 1px 0 var(--glass-highlight);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.station-card-item:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px -2px rgba(15, 23, 42, 0.08);
+}
+
+.station-card-item.is-selected {
+  border-color: var(--primary);
+  background-color: var(--primary-subtle);
+  box-shadow: 0 0 0 1px var(--primary), 0 4px 12px -2px rgba(16, 185, 129, 0.2);
+}
+
+.station-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.station-card-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.station-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.74rem;
+  color: var(--text-tertiary);
+}
+
+/* 24-Hour EMS Trend Line Chart Card */
+.ems-trend-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.ems-trend-card .card-body {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ==================================================
+   SELECTED LOCATION DETAIL INSPECTOR (BALANCED)
+   ================================================== */
+.inspector-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+}
+
+.inspector-card .card-body {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.inspector-station-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--glass-border-subtle);
+  margin-bottom: 14px;
+}
+
+.station-identity-box h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.station-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.code-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background-color: var(--surface-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.category-tag {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.station-description-text {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+/* EMS Score Highlight Banner - Glassmorphic Emerald Theme */
+.ems-banner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(236, 253, 245, 0.9) 0%, rgba(209, 250, 229, 0.65) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  margin-bottom: 18px;
+}
+
+[data-theme="dark"] .ems-banner {
+  background: linear-gradient(135deg, rgba(6, 78, 59, 0.45) 0%, rgba(6, 95, 70, 0.25) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(16, 185, 129, 0.18);
+}
+
+.ems-banner-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.ems-banner-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #059669;
+}
+
+[data-theme="dark"] .ems-banner-label {
+  color: #34D399;
+}
+
+.ems-banner-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #065F46;
+}
+
+[data-theme="dark"] .ems-banner-title {
+  color: #ECFDF5;
+}
+
+.ems-banner-desc {
+  font-size: 0.8rem;
+  color: #047857;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .ems-banner-desc {
+  color: #A7F3D0;
+}
+
+.ems-progress-track {
+  height: 6px;
+  width: 100%;
+  background-color: #A7F3D0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+[data-theme="dark"] .ems-progress-track {
+  background-color: rgba(16, 185, 129, 0.2);
+}
+
+.ems-progress-fill {
+  height: 100%;
+  width: 88%;
+  background-color: #059669;
+  border-radius: var(--radius-full);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] .ems-progress-fill {
+  background-color: #10B981;
+}
+
+/* ==================================================
+   SENSOR TELEMETRY METRIC GRID - Glassmorphic Cells
+   ================================================== */
+.sensor-section-heading {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  margin-bottom: 10px;
+}
+
+.sensors-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.sensor-cell {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--glass-surface-subtle);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border-subtle);
+  box-shadow: 0 2px 6px -1px rgba(15, 23, 42, 0.03), inset 0 1px 0 var(--glass-highlight);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.sensor-cell:hover {
+  transform: translateY(-2px);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 18px -2px rgba(15, 23, 42, 0.08), inset 0 1px 0 var(--glass-highlight);
+}
+
+[data-theme="dark"] .sensor-cell:hover {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 20px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 var(--glass-highlight);
+}
+
+.sensor-cell-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+
+.sensor-cell-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 2px;
+}
+
+.sensor-cell-sub {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Microclimate Observations List */
+.insights-box {
+  background: var(--glass-surface-subtle);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-top: auto;
+  box-shadow: 0 2px 6px -1px rgba(15, 23, 42, 0.02), inset 0 1px 0 var(--glass-highlight);
+}
+
+.insights-box-title {
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+
+.insights-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.insight-bullet {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.bullet-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+/* Chart Canvas Container */
+.chart-container-240 {
+  position: relative;
+  width: 100%;
+  height: 240px;
+}
+
+/* Responsive Dashboard Breakpoint */
+@media (max-width: 1100px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .leaflet-container-wrapper {
+    min-height: 420px;
+    height: 420px;
+  }
+
+  .station-quick-list {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}

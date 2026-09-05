@@ -1,0 +1,688 @@
+/**
+ * GreenPulse - Glassmorphic Aesthetic & EMS Color System (glassmorphism.css)
+ * 
+ * Features:
+ * - High-end frosted glass with specular reflections and backdrop-filter.
+ * - Exact EMS Color Coding: (0-20, #DC2626), (21-40, #F97316), (41-60, #EAB308), (61-80, #65A30D), (81-100, #16A34A).
+ * - Interactive ML Horizon Forecast Cards (1h, 2h, 3h, 4h, 5h).
+ * - Open-Meteo Historical Telemetry Cards (Precipitation, Rain, Probability, AQI).
+ */
+
+/* ==========================================================
+   1. GLOBAL GLASSMORPHIC TOKENS & SURFACES
+   ========================================================== */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.76);
+  --glass-bg-subtle: rgba(255, 255, 255, 0.58);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-border-subtle: rgba(226, 232, 240, 0.8);
+  --glass-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+  --glass-shadow-hover: 0 20px 40px -6px rgba(15, 23, 42, 0.12), 0 8px 16px -2px rgba(15, 23, 42, 0.06);
+  --glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  --glass-blur: blur(20px);
+
+  /* Exact User Requested EMS Colors */
+  --ems-color-1: #DC2626; /* 0-20 */
+  --ems-color-2: #F97316; /* 21-40 */
+  --ems-color-3: #EAB308; /* 41-60 */
+  --ems-color-4: #65A30D; /* 61-80 */
+  --ems-color-5: #16A34A; /* 81-100 */
+}
+
+[data-theme="dark"] {
+  --glass-bg: rgba(17, 24, 39, 0.72);
+  --glass-bg-subtle: rgba(31, 41, 55, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-border-subtle: rgba(255, 255, 255, 0.06);
+  --glass-shadow: 0 12px 36px -4px rgba(0, 0, 0, 0.55), 0 4px 16px -2px rgba(0, 0, 0, 0.35);
+  --glass-shadow-hover: 0 22px 48px -6px rgba(0, 0, 0, 0.7), 0 8px 24px -2px rgba(0, 0, 0, 0.45);
+  --glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Atmospheric Glow Background Mesh */
+.app-container {
+  position: relative;
+  overflow-x: hidden;
+}
+
+.app-container::before {
+  content: '';
+  position: fixed;
+  top: -150px;
+  right: -100px;
+  width: 550px;
+  height: 550px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(22, 163, 74, 0.12) 0%, rgba(101, 163, 13, 0.05) 50%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-container::after {
+  content: '';
+  position: fixed;
+  bottom: -150px;
+  left: 180px;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, rgba(16, 185, 129, 0.05) 50%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Glass Card Upgrades */
+.card, 
+.glass-panel {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur) saturate(180%) !important;
+  -webkit-backdrop-filter: var(--glass-blur) saturate(180%) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow), var(--glass-specular) !important;
+  border-radius: 16px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s;
+}
+
+.card:hover, 
+.glass-panel:hover {
+  box-shadow: var(--glass-shadow-hover), var(--glass-specular) !important;
+}
+
+/* Premium Topbar Glass */
+.app-topbar {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow), var(--glass-specular) !important;
+}
+
+/* Premium Sidebar Glass */
+.app-sidebar {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border-right: 1px solid var(--glass-border) !important;
+}
+
+/* ==========================================================
+   2. EXACT EMS COLOR CODING SYSTEM (0-100)
+   ========================================================== */
+.ems-color-bar-container {
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: var(--glass-bg-subtle);
+  border: 1px solid var(--glass-border-subtle);
+  margin-bottom: 20px;
+}
+
+.ems-color-bar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.ems-color-bar-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ems-color-bar-scale {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.ems-scale-segment {
+  height: 100%;
+  border-radius: 4px;
+  transition: transform 0.2s, filter 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.ems-scale-segment:hover {
+  transform: scaleY(1.4);
+  filter: brightness(1.15);
+}
+
+.ems-scale-segment.seg-1 { background-color: var(--ems-color-1); }
+.ems-scale-segment.seg-2 { background-color: var(--ems-color-2); }
+.ems-scale-segment.seg-3 { background-color: var(--ems-color-3); }
+.ems-scale-segment.seg-4 { background-color: var(--ems-color-4); }
+.ems-scale-segment.seg-5 { background-color: var(--ems-color-5); }
+
+.ems-scale-labels {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+
+.ems-scale-label-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.72rem;
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+}
+
+.ems-scale-label-item .scale-range {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.ems-scale-label-item .scale-text {
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+}
+
+/* Color chips */
+.ems-color-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  color: var(--chip-color, var(--text-primary));
+  background-color: var(--chip-bg, rgba(0, 0, 0, 0.05));
+  border: 1px solid var(--chip-border, transparent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.ems-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Interactive Station Selection & Map Pins */
+.leaflet-pin-icon.status-0-20 svg path { fill: #DC2626 !important; }
+.leaflet-pin-icon.status-21-40 svg path { fill: #F97316 !important; }
+.leaflet-pin-icon.status-41-60 svg path { fill: #EAB308 !important; }
+.leaflet-pin-icon.status-61-80 svg path { fill: #65A30D !important; }
+.leaflet-pin-icon.status-81-100 svg path { fill: #16A34A !important; }
+
+/* ==========================================================
+   3. OPEN-METEO HISTORICAL TELEMETRY WIDGETS
+   ========================================================== */
+.telemetry-source-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563EB;
+  border: 1px solid rgba(37, 99, 235, 0.25);
+}
+
+[data-theme="dark"] .telemetry-source-pill {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60A5FA;
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.historical-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(100, 116, 139, 0.12);
+  color: var(--text-secondary);
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+.weather-aqi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.weather-metric-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--glass-bg-subtle);
+  border: 1px solid var(--glass-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.weather-metric-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+.weather-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.weather-metric-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563EB;
+}
+
+.weather-metric-val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.weather-metric-sub {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ==========================================================
+   4. SEPARATE SECTION: ML PREDICTIVE HORIZON (1h to 5h)
+   ========================================================== */
+.ml-section-banner {
+  padding: 24px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.08) 0%, rgba(37, 99, 235, 0.08) 100%);
+  border: 1px solid rgba(22, 163, 74, 0.25);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ml-section-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #16A34A, #3B82F6, #8B5CF6);
+}
+
+.ml-header-flex {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ml-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(22, 163, 74, 0.15);
+  color: #16A34A;
+  border: 1px solid rgba(22, 163, 74, 0.35);
+}
+
+/* 5-Column Horizon Prediction Cards */
+.ml-horizons-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-top: 20px;
+}
+
+@media (max-width: 1100px) {
+  .ml-horizons-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+.ml-horizon-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ml-horizon-card:hover,
+.ml-horizon-card.is-active {
+  transform: translateY(-4px);
+  border-color: #16A34A !important;
+  box-shadow: 0 16px 32px -4px rgba(22, 163, 74, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.ml-horizon-card.is-active::after {
+  content: 'ACTIVE TARGET';
+  position: absolute;
+  top: -9px;
+  right: 12px;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #16A34A;
+  color: #FFFFFF;
+}
+
+.ml-horizon-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ml-horizon-badge {
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary);
+}
+
+.ml-horizon-time {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.ml-metric-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ml-metric-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--glass-bg-subtle);
+  border: 1px solid var(--glass-border-subtle);
+}
+
+.ml-metric-name {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ml-metric-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary);
+}
+
+.ml-confidence-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+}
+
+.ml-confidence-track {
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.ml-confidence-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #16A34A, #65A30D);
+}
+
+/* What-If Simulator Drawer */
+.simulator-panel {
+  padding: 18px 22px;
+  border-radius: 14px;
+  background: var(--glass-bg-subtle);
+  border: 1px solid var(--glass-border-subtle);
+  margin-top: 20px;
+}
+
+.simulator-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.simulator-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  align-items: flex-end;
+}
+
+.simulator-control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.simulator-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+
+.simulator-range-input {
+  width: 100%;
+  accent-color: #16A34A;
+  cursor: pointer;
+}
+
+/* Interactive Ripple on Buttons */
+.btn-glass {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05), var(--glass-specular) !important;
+  color: var(--text-primary) !important;
+  transition: all 0.2s !important;
+}
+
+.btn-glass:hover {
+  border-color: #16A34A !important;
+  color: #16A34A !important;
+  transform: translateY(-1px);
+}
+
+.btn-glass-primary {
+  background: linear-gradient(135deg, #16A34A 0%, #15803D 100%) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35) !important;
+}
+
+.btn-glass-primary:hover {
+  box-shadow: 0 6px 20px rgba(22, 163, 74, 0.45) !important;
+  transform: translateY(-2px);
+}
+
+/* Coords Input Box */
+.coords-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--glass-bg-subtle);
+  border: 1px solid var(--glass-border-subtle);
+}
+
+.coords-input {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8rem;
+  width: 90px;
+}
+
+/* ==========================================================
+   6. DEDICATED ML PREDICTIONS PAGE (VIEW-ML)
+   "make sure that the ml is on a different page."
+   ========================================================== */
+.ml-view-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ml-view-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 28px;
+  border-radius: 16px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.ml-view-page-header h1 {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.ml-view-page-header p {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  max-width: 760px;
+  line-height: 1.5;
+}
+
+.ml-kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.ml-kpi-card {
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ml-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--kpi-accent, #16A34A);
+}
+
+.ml-kpi-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.ml-kpi-val {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.ml-kpi-sub {
+  font-size: 0.72rem;
+  color: var(--text-tertiary);
+}
+
+.ml-main-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.ml-card-portal-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.09) 0%, rgba(37, 99, 235, 0.06) 100%);
+  flex-wrap: wrap;
+  gap: 16px;
+}
+

@@ -1,0 +1,1048 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GreenPulse | Meghalaya Environmental Telemetry</title>
+    <meta name="description" content="Environmental monitoring and analytics platform for Meghalaya, tracking microclimates, air quality, and the Eco-Metric Score (EMS)." />
+    <meta property="og:title" content="GreenPulse | Meghalaya Environmental Telemetry" />
+    <meta property="og:description" content="Environmental monitoring and analytics platform for Meghalaya, tracking microclimates, air quality, and the Eco-Metric Score (EMS)." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- Application Modular Stylesheets -->
+    <link rel="stylesheet" href="./css/global.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components.css" />
+    <link rel="stylesheet" href="./css/dashboard.css" />
+    <link rel="stylesheet" href="./css/analytics.css" />
+    <link rel="stylesheet" href="./css/glassmorphism.css" />
+    <link rel="stylesheet" href="./css/responsive.css" />
+  </head>
+  <body>
+    <div class="app-container" id="app-root">
+      
+      <!-- ==========================================
+           PERSISTENT SIDEBAR NAVIGATION
+           ========================================== -->
+      <aside class="app-sidebar" id="app-sidebar" aria-label="Main Navigation">
+        <div class="sidebar-top">
+          <div class="sidebar-brand-wrapper" id="sidebar-brand-box">
+            <a href="#dashboard" class="brand-logo" id="brand-logo-link">
+              <div class="brand-icon-box" id="brand-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+                  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                </svg>
+              </div>
+              <div>
+                <span class="brand-title">GreenPulse</span>
+                <span class="brand-badge">ML</span>
+              </div>
+            </a>
+            <button type="button" class="sidebar-close-btn" id="mobile-drawer-close" aria-label="Close Sidebar Menu">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+
+          <nav class="sidebar-nav-section" id="sidebar-nav">
+            <span class="nav-category-label">Monitoring Views</span>
+            <a href="#dashboard" class="nav-item is-active" data-view="dashboard" id="nav-item-dashboard">
+              <span class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="7" height="9" x="3" y="3" rx="1"/>
+                  <rect width="7" height="5" x="14" y="3" rx="1"/>
+                  <rect width="7" height="9" x="14" y="12" rx="1"/>
+                  <rect width="7" height="5" x="3" y="16" rx="1"/>
+                </svg>
+              </span>
+              <span>Dashboard</span>
+            </a>
+            <a href="#ml" class="nav-item" data-view="ml" id="nav-item-ml">
+              <span class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </span>
+              <span style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                <span>ML Horizons</span>
+                <span class="badge" style="font-size: 0.65rem; background: rgba(22, 163, 74, 0.15); color: #16A34A; border: 1px solid rgba(22, 163, 74, 0.3);">1h–5h</span>
+              </span>
+            </a>
+            <a href="#analytics" class="nav-item" data-view="analytics" id="nav-item-analytics">
+              <span class="nav-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="20" x2="18" y2="10"/>
+                  <line x1="12" y1="20" x2="12" y2="4"/>
+                  <line x1="6" y1="20" x2="6" y2="14"/>
+                </svg>
+              </span>
+              <span>Analytics</span>
+            </a>
+          </nav>
+        </div>
+
+        <div class="sidebar-footer" id="sidebar-footer">
+          <!-- Live Telemetry Status Widget -->
+          <div class="system-status-card" id="system-status-card">
+            <div class="system-status-top">
+              <span class="status-dot-pulse"></span>
+              <span>Telemetry Online</span>
+            </div>
+            <p class="system-status-meta">56 Sensors Active • 8 Nodes</p>
+          </div>
+
+          <!-- Light/Dark Mode Switcher -->
+          <button type="button" class="theme-toggle-btn js-theme-toggle" id="btn-theme-toggle" aria-label="Toggle Theme">
+            <div class="theme-btn-content">
+              <!-- Sun Icon for Dark Mode -->
+              <svg class="theme-icon-sun hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2"></path>
+                <path d="M12 20v2"></path>
+                <path d="m4.93 4.93 1.41 1.41"></path>
+                <path d="m17.66 17.66 1.41 1.41"></path>
+                <path d="M2 12h2"></path>
+                <path d="M20 12h2"></path>
+                <path d="m6.34 17.66-1.41 1.41"></path>
+                <path d="m19.07 4.93-1.41 1.41"></path>
+              </svg>
+              <!-- Moon Icon for Light Mode -->
+              <svg class="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+              </svg>
+              <span class="theme-toggle-label">Dark Mode</span>
+            </div>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Mobile Backdrop Overlay -->
+      <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+      <!-- ==========================================
+           MAIN APPLICATION SHELL
+           ========================================== -->
+      <div class="app-main" id="app-main-content">
+        
+        <!-- Sticky Header / Topbar -->
+        <header class="app-topbar" id="app-topbar">
+          <div class="topbar-left">
+            <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open Navigation Menu">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" x2="20" y1="12" y2="12"></line>
+                <line x1="4" x2="20" y1="6" y2="6"></line>
+                <line x1="4" x2="20" y1="18" y2="18"></line>
+              </svg>
+            </button>
+            <div class="topbar-breadcrumbs">
+              <div class="breadcrumb-subrow">
+                <span class="breadcrumb-root">Meghalaya</span>
+                <span class="breadcrumb-separator">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </span>
+                <span class="breadcrumb-current" id="topbar-district">East Khasi Hills</span>
+              </div>
+              <h1 class="topbar-title" id="topbar-view-title">Shillong: Ward's Lake District</h1>
+            </div>
+          </div>
+
+          <div class="topbar-right">
+            <div class="live-badge" id="live-status-pill">
+              <span class="status-dot-pulse"></span>
+              <span>LIVE</span>
+            </div>
+
+            <div class="topbar-refreshed-box">
+              <span class="topbar-refreshed-label">Last Refreshed</span>
+              <span class="topbar-refreshed-time font-mono" id="topbar-live-clock">--:--:-- IST</span>
+            </div>
+
+            <button type="button" class="btn btn-outline" id="btn-topbar-refresh" aria-label="Refresh Telemetry">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Viewport Container -->
+        <main class="view-viewport" id="view-viewport">
+
+          <!-- ==========================================
+               VIEW 1: REGIONAL DASHBOARD
+               ========================================== -->
+          <section class="app-view is-active-view" id="view-dashboard" aria-label="Dashboard View">
+            <header class="dashboard-view-header">
+              <div class="dashboard-title-group">
+                <h1>Regional Environmental Telemetry</h1>
+                <p>Real-time microclimate observations across monitored Meghalaya nodes</p>
+              </div>
+
+              <div class="dashboard-header-actions">
+                <div class="station-dropdown-wrapper">
+                  <label for="location-dropdown" class="station-dropdown-label">Station:</label>
+                  <select id="location-dropdown" class="form-select" aria-label="Select Monitored Station">
+                    <!-- Options populated dynamically from DataService -->
+                  </select>
+                </div>
+                <button type="button" class="btn btn-outline" id="btn-reset-map">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                  </svg>
+                  <span>Reset Map</span>
+                </button>
+              </div>
+            </header>
+
+            <div class="dashboard-grid">
+              
+              <!-- TOP-LEFT: Regional Environmental Map Card -->
+              <div class="card map-card" id="card-map-wrapper">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <h2 class="card-title">Regional Environmental Map</h2>
+                    <p class="card-subtitle">Monitored ecological stations across East Khasi Hills plateau</p>
+                  </div>
+                  <div class="header-badges-row" style="display: flex; gap: 8px;">
+                    <span class="status-badge status-excellent" id="map-header-aqi">AQI: Optimal</span>
+                    <span class="status-badge status-good" id="map-header-temp">Temp: 21.4°C</span>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="leaflet-container-wrapper" id="leaflet-map" role="region" aria-label="Interactive Map of Meghalaya Monitoring Stations"></div>
+                  <div class="map-floating-overlay" id="map-floating-badge">
+                    <span class="status-dot-pulse"></span>
+                    <span>8 Active Sensor Nodes</span>
+                  </div>
+                </div>
+                <div class="map-card-footer">
+                  <span>Click any pin marker to inspect environmental metrics</span>
+                  <div class="legend-items">
+                    <div class="legend-item">
+                      <span class="legend-dot is-green"></span>
+                      <span>Optimal (EMS 80+)</span>
+                    </div>
+                    <div class="legend-item">
+                      <span class="legend-dot is-amber"></span>
+                      <span>Advisory (EMS &lt; 70)</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TOP-RIGHT: Selected Station Inspector (Location Details) -->
+              <div class="card inspector-card" id="card-station-inspector">
+                  <div class="card-body">
+                    
+                    <!-- Station Header -->
+                    <div class="inspector-station-header">
+                      <div class="station-identity-box">
+                        <h2 id="selected-station-name">Ward's Lake</h2>
+                        <div class="station-badge-row">
+                          <span class="code-pill" id="selected-station-code">GP-EKB-01</span>
+                          <span class="category-tag" id="selected-station-category">Public Eco-Park &amp; Water Basin</span>
+                        </div>
+                      </div>
+                      <span class="status-badge status-excellent" id="selected-station-status-badge">Optimal Ecosystem</span>
+                    </div>
+
+                    <p class="station-description-text" id="selected-station-desc">
+                      Historic horseshoe-shaped artificial lake enveloped by lush botanical gardens, pine groves, and walking trails.
+                    </p>
+
+                    <!-- User EMS Color Coding System (0-20, #DC2626), (21-40, #F97316), (41-60, #EAB308), (61-80, #65A30D), (81-100, #16A34A) -->
+                    <div class="ems-color-bar-container" id="ems-color-scale-bar">
+                      <div class="ems-color-bar-header">
+                        <span class="ems-color-bar-title">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                          EMS Color Coding System
+                        </span>
+                        <span style="font-size: 0.7rem; color: var(--text-tertiary); font-family: var(--font-mono, monospace);">Exact Color Scale Mapping</span>
+                      </div>
+                      <div class="ems-color-bar-scale">
+                        <div class="ems-scale-segment seg-1" title="0-20 (#DC2626): Critical Variance"></div>
+                        <div class="ems-scale-segment seg-2" title="21-40 (#F97316): High Stress"></div>
+                        <div class="ems-scale-segment seg-3" title="41-60 (#EAB308): Moderate Variance"></div>
+                        <div class="ems-scale-segment seg-4" title="61-80 (#65A30D): Good Balance"></div>
+                        <div class="ems-scale-segment seg-5" title="81-100 (#16A34A): Optimal Health"></div>
+                      </div>
+                      <div class="ems-scale-labels">
+                        <div class="ems-scale-label-item">
+                          <span class="scale-range" style="color: #DC2626; background: rgba(220, 38, 38, 0.12);">0–20</span>
+                          <span class="scale-text">#DC2626</span>
+                        </div>
+                        <div class="ems-scale-label-item">
+                          <span class="scale-range" style="color: #F97316; background: rgba(249, 115, 22, 0.12);">21–40</span>
+                          <span class="scale-text">#F97316</span>
+                        </div>
+                        <div class="ems-scale-label-item">
+                          <span class="scale-range" style="color: #EAB308; background: rgba(234, 179, 8, 0.12);">41–60</span>
+                          <span class="scale-text">#EAB308</span>
+                        </div>
+                        <div class="ems-scale-label-item">
+                          <span class="scale-range" style="color: #65A30D; background: rgba(101, 163, 13, 0.12);">61–80</span>
+                          <span class="scale-text">#65A30D</span>
+                        </div>
+                        <div class="ems-scale-label-item">
+                          <span class="scale-range" style="color: #16A34A; background: rgba(22, 163, 74, 0.12);">81–100</span>
+                          <span class="scale-text">#16A34A</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Prominent Eco-Metric Score (EMS) Banner -->
+                    <div class="ems-banner" id="ems-highlight-banner">
+                      <div class="ems-gauge-wrapper">
+                        <svg class="ems-gauge-svg" viewBox="0 0 96 96">
+                          <circle class="ems-gauge-track" cx="48" cy="48" r="42" />
+                          <circle class="ems-gauge-fill" id="ems-gauge-circle" cx="48" cy="48" r="42" />
+                        </svg>
+                        <div class="ems-gauge-center">
+                          <span class="ems-gauge-number font-mono" id="ems-score-value">88</span>
+                          <span class="ems-gauge-max">/ 100</span>
+                        </div>
+                      </div>
+                      <div class="ems-banner-info">
+                        <span class="ems-banner-label">Eco-Metric Score (EMS)</span>
+                        <h3 class="ems-banner-title" id="ems-banner-title">The environment is currently thriving</h3>
+                        <p class="ems-banner-desc" id="ems-banner-desc">All primary indicators are within safe thresholds.</p>
+                        <div class="ems-progress-track">
+                          <div class="ems-progress-fill" id="ems-progress-fill" style="width: 88%;"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Environmental Sensor Grid -->
+                    <h3 class="sensor-section-heading">Current Telemetry Readings</h3>
+                    <div class="sensors-grid" id="sensors-metric-grid">
+                      
+                      <!-- Temperature -->
+                      <div class="sensor-cell" id="cell-temp">
+                        <div class="sensor-cell-header">
+                          <span>Temperature</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+                          </svg>
+                        </div>
+                        <span class="sensor-cell-value" id="val-temp">20.4°C</span>
+                        <span class="sensor-cell-sub">Elev. <span id="selected-station-elevation">1,496 m</span></span>
+                      </div>
+
+                      <!-- Relative Humidity -->
+                      <div class="sensor-cell" id="cell-humidity">
+                        <div class="sensor-cell-header">
+                          <span>Relative Humidity</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                          </svg>
+                        </div>
+                        <span class="sensor-cell-value" id="val-humidity">78%</span>
+                        <span class="sensor-cell-sub">Subtropical highland air</span>
+                      </div>
+
+                      <!-- Air Quality -->
+                      <div class="sensor-cell" id="cell-airquality">
+                        <div class="sensor-cell-header">
+                          <span>Air Quality Score</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/>
+                            <path d="M9.6 4.6A2 2 0 1 1 11 8H2"/>
+                            <path d="M12.6 19.4A2 2 0 1 0 14 16H2"/>
+                          </svg>
+                        </div>
+                        <span class="sensor-cell-value" id="val-airquality">88 / 100</span>
+                        <span class="sensor-cell-sub" id="val-aqi-sub">AQI 28 • PM2.5 11.2 µg/m³</span>
+                      </div>
+
+                      <!-- Soil Moisture -->
+                      <div class="sensor-cell" id="cell-soil">
+                        <div class="sensor-cell-header">
+                          <span>Soil Moisture</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>
+                          </svg>
+                        </div>
+                        <span class="sensor-cell-value" id="val-soil">84 / 100</span>
+                        <span class="sensor-cell-sub">Humus organic topsoil</span>
+                      </div>
+
+                      <!-- Acoustic Noise -->
+                      <div class="sensor-cell" id="cell-noise">
+                        <div class="sensor-cell-header">
+                          <span>Acoustic Noise</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                          </svg>
+                        </div>
+                        <span class="sensor-cell-value" id="val-noise">46 dB</span>
+                        <span class="sensor-cell-sub">Quiet Ambient Park</span>
+                      </div>
+
+                      <!-- Ambient Light -->
+                      <div class="sensor-cell" id="cell-light">
+                        <div class="sensor-cell-header">
+                          <span>Ambient Solar Light</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="4"/>
+                            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                          </svg>
+                        </div>
+                        <span class="sensor-cell-value" id="val-light">68 / 100</span>
+                        <span class="sensor-cell-sub">Pine canopy filtered</span>
+                      </div>
+
+                      <!-- Crowd Footprint Density -->
+                      <div class="sensor-cell" id="cell-crowd">
+                        <div class="sensor-cell-header">
+                          <span>Crowd Footprint</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                          </svg>
+                        </div>
+                        <span class="sensor-cell-value" id="val-crowd">42 / 100</span>
+                        <span class="sensor-cell-sub">Moderate leisure traffic</span>
+                      </div>
+
+                      <!-- CO2 Concentration -->
+                      <div class="sensor-cell" id="cell-co2">
+                        <div class="sensor-cell-header">
+                          <span>CO2 Concentration</span>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                          </svg>
+                        </div>
+                        <span class="sensor-cell-value" id="val-co2">412 ppm</span>
+                        <span class="sensor-cell-sub">Normal background atmospheric</span>
+                      </div>
+
+                    </div>
+
+                    <!-- Microclimate Observations List -->
+                    <div class="insights-box">
+                      <h3 class="insights-box-title">Microclimate Observations</h3>
+                      <ul class="insights-list" id="selected-station-insights">
+                        <!-- Populated dynamically -->
+                      </ul>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- BOTTOM-LEFT: Historical 24-Hour EMS Trend Line Chart -->
+                <div class="card ems-trend-card" id="card-ems-chart">
+                  <div class="card-header">
+                    <div class="card-header-left">
+                      <h2 class="card-title">24-Hour Eco-Metric Score (EMS) Trend</h2>
+                      <p class="card-subtitle">Continuous diurnal ecological stability index for selected station</p>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="chart-container-240">
+                      <canvas id="chart-ems-trend"></canvas>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BOTTOM-RIGHT: Station Network Quick Selector -->
+                <div class="card station-quick-card" id="card-station-quick">
+                  <div class="card-header">
+                    <div class="card-header-left">
+                      <h2 class="card-title">Station Quick Selector</h2>
+                      <p class="card-subtitle">Real-time composite Eco-Metric Score across plateau network</p>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <div class="station-quick-list" id="station-quick-list">
+                      <!-- Cards populated dynamically -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ========================================================
+                     OPEN-METEO HISTORICAL TELEMETRY (Rainfall, Precip, AQI)
+                     APIs:
+                     - forecast: hourly=precipitation,rain,precipitation_probability&past_days=2
+                     - air-quality: hourly=pm10,pm2_5,nitrogen_dioxide,carbon_dioxide&past_days=2
+                     "from the apis given, grab the historic data only."
+                     ======================================================== -->
+                <div class="card glass-panel" style="grid-column: 1 / -1;" id="card-open-meteo-historical">
+                  <div class="card-header" style="flex-wrap: wrap; gap: 12px;">
+                    <div class="card-header-left">
+                      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                        <h2 class="card-title">Open-Meteo Historical Telemetry</h2>
+                        <span class="telemetry-source-pill">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                          Open-Meteo API
+                        </span>
+                        <span class="historical-badge">Past 48 Hours Only</span>
+                      </div>
+                      <p class="card-subtitle">
+                        Historical observation buffer (precipitation, rainfall, precipitation probability, and AQI) strictly filtered for historical timestamps.
+                      </p>
+                    </div>
+
+                    <!-- Interactive Coordinates Switcher -->
+                    <div class="coords-bar" id="open-meteo-coords-bar">
+                      <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">Coordinates:</span>
+                      <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 0.72rem; color: var(--text-tertiary);">Lat:</span>
+                        <input type="number" step="0.01" class="coords-input" id="coords-lat" value="52.52" />
+                        <span style="font-size: 0.72rem; color: var(--text-tertiary);">Lon:</span>
+                        <input type="number" step="0.01" class="coords-input" id="coords-lon" value="13.41" />
+                        <button type="button" class="btn btn-glass" id="btn-fetch-coords" style="padding: 6px 12px; font-size: 0.75rem;" onclick="
+                          const lat = parseFloat(document.getElementById('coords-lat').value);
+                          const lon = parseFloat(document.getElementById('coords-lon').value);
+                          if (!isNaN(lat) && !isNaN(lon) && window.OpenMeteoService) {
+                            window.OpenMeteoService.fetchHistoricalData(lat, lon).then(data => {
+                              if (window.DashboardController) window.DashboardController.updateDashboardView(window.DashboardController.selectedLocationId);
+                              if (window.MLController) window.MLController.runInference();
+                            });
+                          }
+                        ">
+                          Fetch API
+                        </button>
+                      </div>
+                      <button type="button" class="btn btn-glass" style="padding: 6px 10px; font-size: 0.7rem;" onclick="
+                        document.getElementById('coords-lat').value = '52.52';
+                        document.getElementById('coords-lon').value = '13.41';
+                        document.getElementById('btn-fetch-coords').click();
+                      " title="Load Berlin reference from user prompt">
+                        Preset (52.52, 13.41)
+                      </button>
+                      <button type="button" class="btn btn-glass" style="padding: 6px 10px; font-size: 0.7rem;" onclick="
+                        document.getElementById('coords-lat').value = '25.5788';
+                        document.getElementById('coords-lon').value = '91.8933';
+                        document.getElementById('btn-fetch-coords').click();
+                      " title="Shillong Station Coordinates">
+                        Preset (Shillong)
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="card-body">
+                    <!-- Telemetry Cards Grid -->
+                    <div class="weather-aqi-grid">
+                      <!-- Current Rainfall Rate -->
+                      <div class="weather-metric-card" id="card-metric-rain">
+                        <div class="weather-metric-top">
+                          <span>Rainfall Rate</span>
+                          <div class="weather-metric-icon" style="background: rgba(37, 99, 235, 0.1); color: #2563EB;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>
+                          </div>
+                        </div>
+                        <span class="weather-metric-val" id="val-rainfall-current">0.0 mm/h</span>
+                        <div class="weather-metric-sub">
+                          <span>Accumulated (48h)</span>
+                          <span class="font-mono font-bold" id="val-accum-rain">0.0 mm</span>
+                        </div>
+                      </div>
+
+                      <!-- Precipitation Probability -->
+                      <div class="weather-metric-card" id="card-metric-prob">
+                        <div class="weather-metric-top">
+                          <span>Precipitation Probability</span>
+                          <div class="weather-metric-icon" style="background: rgba(245, 158, 11, 0.1); color: #D97706;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+                          </div>
+                        </div>
+                        <span class="weather-metric-val" id="val-precip-prob">0%</span>
+                        <div class="weather-metric-sub">
+                          <span>Historic Hourly Average</span>
+                          <span class="font-mono font-bold">Open-Meteo</span>
+                        </div>
+                      </div>
+
+                      <!-- Historical PM2.5 -->
+                      <div class="weather-metric-card" id="card-metric-pm25">
+                        <div class="weather-metric-top">
+                          <span>Historical PM2.5</span>
+                          <div class="weather-metric-icon" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="12" r="2"/></svg>
+                          </div>
+                        </div>
+                        <span class="weather-metric-val" id="val-openmeteo-pm25">-- µg/m³</span>
+                        <div class="weather-metric-sub">
+                          <span>Baseline for ML</span>
+                          <span class="font-mono font-bold">Latest Point</span>
+                        </div>
+                      </div>
+
+                      <!-- Historical PM10 -->
+                      <div class="weather-metric-card" id="card-metric-pm10">
+                        <div class="weather-metric-top">
+                          <span>Historical PM10</span>
+                          <div class="weather-metric-icon" style="background: rgba(139, 92, 246, 0.1); color: #8B5CF6;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><circle cx="19" cy="12" r="3"/></svg>
+                          </div>
+                        </div>
+                        <span class="weather-metric-val" id="val-openmeteo-pm10">-- µg/m³</span>
+                        <div class="weather-metric-sub">
+                          <span>Coarse Particulates</span>
+                          <span class="font-mono font-bold">Latest Point</span>
+                        </div>
+                      </div>
+
+                      <!-- Historical NO2 -->
+                      <div class="weather-metric-card" id="card-metric-no2">
+                        <div class="weather-metric-top">
+                          <span>Nitrogen Dioxide (NO₂)</span>
+                          <div class="weather-metric-icon" style="background: rgba(239, 68, 68, 0.1); color: #EF4444;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                          </div>
+                        </div>
+                        <span class="weather-metric-val" id="val-openmeteo-no2">-- µg/m³</span>
+                        <div class="weather-metric-sub">
+                          <span>Open-Meteo AQI</span>
+                          <span class="font-mono font-bold">Historical</span>
+                        </div>
+                      </div>
+
+                      <!-- Historical CO2 -->
+                      <div class="weather-metric-card" id="card-metric-co2">
+                        <div class="weather-metric-top">
+                          <span>Carbon Dioxide (CO₂)</span>
+                          <div class="weather-metric-icon" style="background: rgba(100, 116, 139, 0.1); color: #64748B;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                          </div>
+                        </div>
+                        <span class="weather-metric-val" id="val-openmeteo-co2">-- ppm</span>
+                        <div class="weather-metric-sub">
+                          <span>Atmospheric Background</span>
+                          <span class="font-mono font-bold">Historical</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Dual Historical Charts Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 18px; margin-top: 20px;">
+                      <!-- Historical Weather Chart -->
+                      <div style="padding: 14px; border-radius: 12px; background: var(--glass-bg-subtle); border: 1px solid var(--glass-border-subtle);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                          <h4 style="font-size: 0.82rem; font-weight: 700; color: var(--text-secondary);">Historical Rainfall &amp; Precipitation Probability</h4>
+                          <span class="historical-badge">Past 48h</span>
+                        </div>
+                        <div style="height: 200px; position: relative;">
+                          <canvas id="chart-historical-weather"></canvas>
+                        </div>
+                      </div>
+
+                      <!-- Historical Air Quality Chart -->
+                      <div style="padding: 14px; border-radius: 12px; background: var(--glass-bg-subtle); border: 1px solid var(--glass-border-subtle);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                          <h4 style="font-size: 0.82rem; font-weight: 700; color: var(--text-secondary);">Historical Air Quality (PM2.5 &amp; PM10)</h4>
+                          <span class="historical-badge">Past 48h</span>
+                        </div>
+                        <div style="height: 200px; position: relative;">
+                          <canvas id="chart-historical-aqi"></canvas>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- ML Model Dedicated Page Portal Card -->
+                <div class="card ml-card-portal-banner" style="grid-column: 1 / -1;">
+                  <div style="display: flex; align-items: center; gap: 14px;">
+                    <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(22, 163, 74, 0.12); border: 1px solid rgba(22, 163, 74, 0.3); display: flex; align-items: center; justify-content: center; color: #16A34A; flex-shrink: 0;">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div>
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin: 0;">
+                          Custom ML Model Predictions (1h – 5h Horizon)
+                        </h3>
+                        <span class="badge" style="font-size: 0.65rem; background: rgba(22, 163, 74, 0.15); color: #16A34A; border: 1px solid rgba(22, 163, 74, 0.3);">Dedicated Page</span>
+                      </div>
+                      <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 4px;">
+                        Autoregressive particulate forecasts strictly covering PM2.5 &amp; PM10, What-If scenario simulations, and Open-Meteo historical baseline transitions.
+                      </p>
+                    </div>
+                  </div>
+                  <a href="#ml" class="btn btn-glass btn-glass-primary" onclick="if(window.NavigationManager) window.NavigationManager.switchView('ml');" style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; font-size: 0.85rem; font-weight: 600; text-decoration: none;">
+                    <span>Open ML Predictions Page</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  </a>
+                </div>
+
+              </div>
+            </section>
+
+          <!-- ========================================================
+               VIEW 2: ML PREDICTIVE HORIZONS (1h – 5h)
+               "make sure that the ml is on a different page."
+               ======================================================== -->
+          <section class="app-view hidden ml-view-page" id="view-ml" aria-label="ML Predictions View">
+            
+            <header class="ml-view-page-header glass-panel">
+              <div style="flex: 1; min-width: 280px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+                  <h1 style="margin: 0;">Custom ML Model Predictions (1h – 5h Horizon)</h1>
+                  <span class="ml-badge-pill">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                    Autoregressive Model
+                  </span>
+                  <div class="live-badge" id="ml-backend-status-pill" style="padding: 4px 10px; font-size: 0.7rem;">
+                    <span class="status-dot-pulse"></span>
+                    <span>Backend Active</span>
+                  </div>
+                </div>
+                <p>
+                  Predictions strictly cover <strong>PM2.5</strong> and <strong>PM10</strong> for the next 1hr, 2hr, 3hr, 4hr, and 5hr. Historical baseline is grabbed from Open-Meteo APIs, while all future predictions are inferred by our custom ensemble model connected to our Express backend (<code class="font-mono" style="font-size: 0.75rem; background: rgba(0,0,0,0.06); padding: 2px 6px; border-radius: 4px;">/api/ml-predictions</code>).
+                </p>
+              </div>
+
+              <!-- Station selector & Metric filter buttons -->
+              <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <label for="ml-station-select" style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary);">Target Station:</label>
+                  <select id="ml-station-select" class="form-select" style="padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; font-weight: 600;">
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button type="button" class="btn btn-glass btn-glass-primary is-active" id="btn-ml-filter-both" style="padding: 6px 12px; font-size: 0.75rem;">
+                    Dual (PM2.5 + PM10)
+                  </button>
+                  <button type="button" class="btn btn-glass" id="btn-ml-filter-pm25" style="padding: 6px 12px; font-size: 0.75rem;">
+                    PM2.5 Only
+                  </button>
+                  <button type="button" class="btn btn-glass" id="btn-ml-filter-pm10" style="padding: 6px 12px; font-size: 0.75rem;">
+                    PM10 Only
+                  </button>
+                </div>
+              </div>
+            </header>
+
+            <!-- ML KPI Summary Banner -->
+            <div class="ml-kpi-row">
+              <div class="ml-kpi-card" style="--kpi-accent: #3B82F6;">
+                <span class="ml-kpi-label">Historical PM2.5 Baseline</span>
+                <span class="ml-kpi-val" id="ml-baseline-pm25">-- µg/m³</span>
+                <span class="ml-kpi-sub">Source: Open-Meteo Air Quality API</span>
+              </div>
+              <div class="ml-kpi-card" style="--kpi-accent: #8B5CF6;">
+                <span class="ml-kpi-label">Historical PM10 Baseline</span>
+                <span class="ml-kpi-val" id="ml-baseline-pm10">-- µg/m³</span>
+                <span class="ml-kpi-sub">Source: Open-Meteo Air Quality API</span>
+              </div>
+              <div class="ml-kpi-card" style="--kpi-accent: #16A34A;">
+                <span class="ml-kpi-label">5-Hour Forecast Trajectory</span>
+                <span class="ml-kpi-val" id="ml-kpi-trajectory">Active</span>
+                <span class="ml-kpi-sub">Model dynamic autoregressive drift</span>
+              </div>
+              <div class="ml-kpi-card" style="--kpi-accent: #0284C7;">
+                <span class="ml-kpi-label">Precipitation Scavenging</span>
+                <span class="ml-kpi-val" id="ml-kpi-precip-factor">Dynamic</span>
+                <span class="ml-kpi-sub">Precipitation aerosol washout rate</span>
+              </div>
+            </div>
+
+            <!-- 5-Horizon Forecast Cards Grid (+1h, +2h, +3h, +4h, +5h) -->
+            <div class="card" style="padding: 20px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">
+                    Inferred Particulate Concentrations (+1h to +5h Horizons)
+                  </h2>
+                  <p style="font-size: 0.78rem; color: var(--text-secondary);">
+                    Click any horizon card below to isolate its predictive vector in the transition trajectory chart.
+                  </p>
+                </div>
+                <span style="font-size: 0.72rem; color: var(--text-tertiary);">EMS Color Scale Active</span>
+              </div>
+              <div class="ml-horizons-grid" id="ml-horizons-container">
+                <!-- Populated dynamically by MLController -->
+              </div>
+            </div>
+
+            <!-- Historical to ML Transition Chart -->
+            <div class="card" style="padding: 20px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                    <span>Historical Telemetry vs. ML Prediction Trajectory</span>
+                  </h2>
+                  <p style="font-size: 0.78rem; color: var(--text-secondary);">
+                    Solid curve represents Open-Meteo historical readings; dashed glowing curve represents custom ML Model forecast.
+                  </p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px; font-size: 0.75rem;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 14px; height: 3px; background: #10B981; border-radius: 2px;"></span>
+                    <span>Open-Meteo Historical</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="display: inline-block; width: 14px; height: 3px; background: #059669; border-top: 2px dashed #059669;"></span>
+                    <span>ML Model Horizon</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="height: 280px; position: relative;">
+                <canvas id="chart-ml-transition"></canvas>
+              </div>
+            </div>
+
+            <!-- Interactive What-If Scenario Simulator -->
+            <div class="simulator-panel" id="ml-simulator-panel" style="margin-top: 0;">
+              <div class="simulator-title-bar">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin: 0;">Interactive What-If Scenario Simulator</h3>
+                </div>
+                <span style="font-size: 0.72rem; color: var(--text-tertiary);">Simulate rainfall scavenging, traffic variations, and mountain wind dispersion</span>
+              </div>
+
+              <div class="simulator-controls-grid">
+                <!-- Rainfall Scavenging Slider -->
+                <div class="simulator-control-item">
+                  <label class="simulator-label">
+                    <span>Simulated Precipitation (Scavenging)</span>
+                    <span class="font-mono" id="sim-rain-val">+0 mm/h</span>
+                  </label>
+                  <input type="range" class="simulator-range-input" id="sim-rain-slider" min="0" max="25" step="1" value="0" />
+                  <span style="font-size: 0.65rem; color: var(--text-tertiary);">Wet deposition washes out suspended particulate matter</span>
+                </div>
+
+                <!-- Traffic Intensity Factor -->
+                <div class="simulator-control-item">
+                  <label class="simulator-label">
+                    <span>Urban Traffic Footprint</span>
+                    <span>Vehicle Emissions</span>
+                  </label>
+                  <select class="form-select" id="sim-traffic-select" style="padding: 6px 10px; font-size: 0.8rem; border-radius: 8px;">
+                    <option value="0.7">Low Traffic (Night / Holiday -30%)</option>
+                    <option value="1.0" selected>Baseline Traffic Normal (1.0x)</option>
+                    <option value="1.3">Moderate Rush Hour (+30%)</option>
+                    <option value="1.6">Severe Gridlock (+60%)</option>
+                  </select>
+                  <span style="font-size: 0.65rem; color: var(--text-tertiary);">Direct source combustion for PM2.5 and PM10</span>
+                </div>
+
+                <!-- Wind Dispersion Factor -->
+                <div class="simulator-control-item">
+                  <label class="simulator-label">
+                    <span>Highland Wind Dispersion</span>
+                    <span class="font-mono" id="sim-wind-val">1.0x factor</span>
+                  </label>
+                  <input type="range" class="simulator-range-input" id="sim-wind-slider" min="0.5" max="2.0" step="0.1" value="1.0" />
+                  <span style="font-size: 0.65rem; color: var(--text-tertiary);">Wind speed ventilates and clears microclimate pockets</span>
+                </div>
+
+                <!-- Simulation Action Buttons -->
+                <div style="display: flex; gap: 8px;">
+                  <button type="button" class="btn btn-glass-primary" id="btn-rerun-ml-sim" style="flex: 1; padding: 8px 14px; font-size: 0.78rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <span>Re-Run ML Model</span>
+                  </button>
+                  <button type="button" class="btn btn-glass" id="btn-reset-ml-sim" style="padding: 8px 12px; font-size: 0.78rem;">
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+          <!-- ==========================================
+               VIEW 2: REGIONAL ANALYTICS
+               ========================================== -->
+          <section class="app-view hidden" id="view-analytics" aria-label="Analytics View">
+            <header class="analytics-view-header">
+              <div class="analytics-title-group">
+                <h1>Regional Telemetry Analytics</h1>
+                <p>Comparative ecological diagnostics, rankings, and anomaly detection</p>
+              </div>
+            </header>
+
+            <!-- KPI Summary Cards -->
+            <div class="kpi-grid" id="analytics-kpi-grid">
+              
+              <div class="kpi-card highlight-green" id="kpi-card-avg-ems">
+                <span class="kpi-label">Regional Average EMS</span>
+                <span class="kpi-value font-mono" id="kpi-avg-ems">--</span>
+                <span class="kpi-sub">Composite health across 8 stations</span>
+              </div>
+
+              <div class="kpi-card" id="kpi-card-best">
+                <span class="kpi-label">Highest Ecological Score</span>
+                <span class="kpi-value" id="kpi-best-location">--</span>
+                <span class="kpi-sub" id="kpi-best-sub">--</span>
+              </div>
+
+              <div class="kpi-card" id="kpi-card-worst">
+                <span class="kpi-label">High Anthropogenic Stress</span>
+                <span class="kpi-value" id="kpi-worst-location">--</span>
+                <span class="kpi-sub" id="kpi-worst-sub">--</span>
+              </div>
+
+              <div class="kpi-card" id="kpi-card-temp">
+                <span class="kpi-label">Average Microclimate</span>
+                <span class="kpi-value font-mono" id="kpi-avg-temp">--</span>
+                <span class="kpi-sub" id="kpi-avg-temp-sub">--</span>
+              </div>
+
+            </div>
+
+            <!-- Charts Row 1: 7-Day Regional Trend + Comparative Bar -->
+            <div class="analytics-charts-grid">
+              
+              <!-- 7-Day Historical Regional Aggregate -->
+              <div class="card" id="card-regional-trend">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <h2 class="card-title">7-Day Regional EMS &amp; Temperature Trend</h2>
+                    <p class="card-subtitle">Plateau-wide moving environmental indicators</p>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="chart-container-300">
+                    <canvas id="chart-regional-trend"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Comparative Location Bar Chart -->
+              <div class="card" id="card-location-comparison">
+                <div class="card-header">
+                  <div class="card-header-left">
+                    <h2 class="card-title">Cross-Location EMS Comparison</h2>
+                    <p class="card-subtitle">Ranked by Eco-Metric Score across monitored sites (0–100 scale)</p>
+                  </div>
+                  <div class="comparison-header-controls" id="comparison-controls-container">
+                    <div class="view-toggle-group" id="comparison-view-toggle">
+                      <button type="button" class="view-toggle-btn active" data-orientation="horizontal" id="btn-toggle-ranked" title="Ranked Horizontal Bar View">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="17" y2="12"></line><line x1="3" y1="18" x2="11" y2="18"></line></svg>
+                        <span>Ranked</span>
+                      </button>
+                      <button type="button" class="view-toggle-btn" data-orientation="vertical" id="btn-toggle-columns" title="Vertical Column View">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="18" y1="20" x2="18" y2="14"></line></svg>
+                        <span>Columns</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="chart-container-300">
+                    <canvas id="chart-location-comparison"></canvas>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Multi-Sensor Parameter Radar Chart -->
+            <div class="card ranking-table-card radar-chart-card" id="card-sensor-radar">
+              <div class="card-header">
+                <div class="card-header-left">
+                  <h2 class="card-title">Multi-Sensor Parameter Diagnostic</h2>
+                  <p class="card-subtitle">Normalized 6-axis ecological fingerprint vs regional average</p>
+                </div>
+                <div class="radar-header-controls">
+                  <select id="radar-location-select" class="form-select" aria-label="Select Station for Radar Analysis">
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart-container-300">
+                  <canvas id="chart-sensor-radar"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Location Ecological Ranking Table -->
+            <div class="card ranking-table-card" id="card-ranking-table">
+              <div class="card-header">
+                <div class="card-header-left">
+                  <h2 class="card-title">Regional Ecological Rankings</h2>
+                  <p class="card-subtitle">Detailed sensor parameters for all active monitoring nodes</p>
+                </div>
+                <div class="table-search-box">
+                  <input type="text" id="table-search-input" class="form-input" placeholder="Search station or code..." aria-label="Filter locations table" />
+                </div>
+              </div>
+              <div class="card-body" style="padding: 0;">
+                <div class="table-responsive-wrapper">
+                  <table class="ranking-table" aria-label="Locations Ranking Table">
+                    <thead>
+                      <tr>
+                        <th class="table-cell-rank">#</th>
+                        <th>Location &amp; Station Code</th>
+                        <th>EMS Index</th>
+                        <th>Health Status</th>
+                        <th>Temperature</th>
+                        <th>Air Quality</th>
+                        <th>Acoustics</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="ranking-table-body">
+                      <!-- Populated dynamically by AnalyticsController -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Derived Environmental Observations / Anomaly Cards -->
+            <div class="card" id="card-insights">
+              <div class="card-header">
+                <div class="card-header-left">
+                  <h2 class="card-title">Derived Environmental Insights &amp; Observations</h2>
+                  <p class="card-subtitle">Algorithmic microclimate anomalies and ecological findings</p>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="insights-grid" id="insights-grid-container">
+                  <!-- Generated dynamically from AnalyticsController -->
+                </div>
+              </div>
+            </div>
+
+          </section>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Application Modular Scripts -->
+    <script src="./js/ems-colors.js"></script>
+    <script src="./js/open-meteo-service.js"></script>
+    <script src="./js/ml-service.js"></script>
+    <script src="./js/demo-data.js"></script>
+    <script src="./js/data-service.js"></script>
+    <script src="./js/theme.js"></script>
+    <script src="./js/charts.js"></script>
+    <script src="./js/map.js"></script>
+    <script src="./js/dashboard.js"></script>
+    <script src="./js/analytics.js"></script>
+    <script src="./js/ml-controller.js"></script>
+    <script src="./js/navigation.js"></script>
+    <script src="./js/app.js"></script>
+  </body>
+</html>
+
+

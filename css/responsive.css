@@ -1,0 +1,195 @@
+/**
+ * GreenPulse - Responsive Styles (responsive.css)
+ * 
+ * Mobile-first and desktop-tuned adaptive layouts:
+ * - Desktop: Sidebar + multi-column dashboard grid
+ * - Tablet: Stacked grid, preserved layout integrity
+ * - Mobile: Collapsible off-canvas navigation drawer with backdrop
+ * - Touch targets >= 44px on mobile
+ * - Zero accidental horizontal overflows
+ */
+
+/* ==================================================
+   LARGE LAPTOPS & TABLETS (<= 1200px)
+   ================================================== */
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .insights-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ==================================================
+   TABLETS & MEDIUM SCREENS (<= 960px)
+   ================================================== */
+@media (max-width: 960px) {
+  :root {
+    --sidebar-width: 240px;
+  }
+
+  .analytics-charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .view-viewport {
+    padding: 24px 20px;
+  }
+
+  .app-topbar {
+    padding: 0 20px;
+  }
+
+  .leaflet-container-wrapper {
+    height: 380px;
+  }
+}
+
+/* ==================================================
+   MOBILE DEVICES (<= 768px)
+   ================================================== */
+@media (max-width: 768px) {
+  /* Turn Sidebar into Off-Canvas Drawer */
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 280px;
+    z-index: 100;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .app-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-close-btn {
+    display: flex;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    pointer-events: none;
+  }
+
+  .sidebar-backdrop.is-active {
+    pointer-events: auto;
+    opacity: 1;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .app-topbar {
+    padding: 0 16px;
+    height: 58px;
+  }
+
+  .topbar-right .clock-display,
+  .topbar-right .region-indicator {
+    display: none; /* Keep topbar uncluttered on small screens */
+  }
+
+  .view-viewport {
+    padding: 16px;
+  }
+
+  .dashboard-view-header,
+  .analytics-view-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .station-dropdown-wrapper {
+    width: 100%;
+  }
+
+  .station-dropdown-wrapper select {
+    flex: 1;
+    width: 100%;
+  }
+
+  .leaflet-container-wrapper {
+    height: 320px;
+  }
+
+  .station-quick-list {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .station-card-item {
+    padding: 10px;
+  }
+
+  .sensors-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ems-banner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .ems-banner-info {
+    align-items: center;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .insights-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .card-header {
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .card-header .table-search-box {
+    width: 100%;
+  }
+
+  .radar-header-controls {
+    width: 100%;
+  }
+
+  .radar-header-controls select {
+    width: 100%;
+  }
+
+  .table-responsive-wrapper {
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+
+  .ranking-table th,
+  .ranking-table td {
+    padding: 10px 12px;
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "GreenPulse",
+  "description": "Environmental monitoring and analytics platform for Meghalaya, tracking microclimates, air quality, and the Eco-Metric Score (EMS).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
