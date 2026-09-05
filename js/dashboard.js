@@ -102,7 +102,7 @@
                   data-location-id="${loc.id}"
                   id="station-card-${loc.id}">
             <div class="station-card-top">
-              <span class="station-card-name">${loc.name}</span>
+              <span class="station-card-name" title="${loc.name}">${loc.name}</span>
               <span class="ems-color-chip" 
                     style="--chip-color: ${color}; --chip-bg: ${window.EMSColors ? window.EMSColors.getRgba(emsScore, 0.15) : 'rgba(0,0,0,0.05)'}; --chip-border: ${window.EMSColors ? window.EMSColors.getRgba(emsScore, 0.4) : 'transparent'};">
                 <span class="ems-chip-dot" style="background-color: ${color};"></span>

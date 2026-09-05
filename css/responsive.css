@@ -100,6 +100,23 @@
     height: 58px;
   }
 
+  .topbar-right {
+    gap: 10px;
+  }
+
+  .topbar-refreshed-box {
+    text-align: right;
+  }
+
+  .topbar-refreshed-label {
+    font-size: 0.58rem;
+  }
+
+  .topbar-refreshed-time {
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
+
   .topbar-right .clock-display,
   .topbar-right .region-indicator {
     display: none; /* Keep topbar uncluttered on small screens */

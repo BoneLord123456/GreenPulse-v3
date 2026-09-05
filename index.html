@@ -160,9 +160,26 @@
               <span>LIVE</span>
             </div>
 
-            <div class="topbar-refreshed-box">
+            <div class="topbar-refreshed-box" id="topbar-refreshed-container">
               <span class="topbar-refreshed-label">Last Refreshed</span>
               <span class="topbar-refreshed-time font-mono" id="topbar-live-clock">--:--:-- IST</span>
+              <script>
+                (function() {
+                  try {
+                    var el = document.getElementById('topbar-live-clock');
+                    if (el) {
+                      var d = new Date();
+                      var t;
+                      try {
+                        t = d.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Asia/Kolkata' });
+                      } catch(e) {
+                        t = d.toTimeString().slice(0, 8);
+                      }
+                      el.textContent = t + ' IST';
+                    }
+                  } catch(e) {}
+                })();
+              </script>
             </div>
 
             <button type="button" class="btn btn-outline" id="btn-topbar-refresh" aria-label="Refresh Telemetry">

@@ -172,6 +172,9 @@
   gap: 6px;
   box-shadow: 0 2px 6px -1px rgba(15, 23, 42, 0.03), inset 0 1px 0 var(--glass-highlight);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .station-card-item:hover {
@@ -190,7 +193,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  flex-wrap: nowrap;
 }
 
 .station-card-name {
@@ -200,6 +206,14 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.station-card-top .ems-color-chip {
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-left: auto;
 }
 
 .station-card-meta {
@@ -208,6 +222,10 @@
   gap: 6px;
   font-size: 0.74rem;
   color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 /* 24-Hour EMS Trend Line Chart Card */
